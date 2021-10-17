@@ -3,24 +3,40 @@
 // Сохраняет данные в базу данных +++
 // Маршрутизация
 // динамичность
-
+// Сохронять в переменную JSON
 
 const express = require('express')
 const app = express()
 const path = require('path')
+const url = require('url')
 const PORT = process.env.PORT || 3000 // SERVER PORT
-const url = 'https://www.cbr-xml-daily.ru/daily.xml' // API URL XML
-
-
-const axios = require('axios').default; //For GET FILE FROM API
-const fs= require('fs') // file system
-const parseString = require('xml2js').parseString; // convert XML to JSON
-
+const TESTD = require('./test.json')
+const router = express.Router();
+const DATAJSON = require('./rate.json')
+const GetDATA = require('./src/getdataformAPI') //get data from api 
 // ROUTER 
-app.use(express.static(path.resolve(__dirname, 'client')) )
-app.get('*', (req, res)=> {
-  res.sendFile(path.resolve(__dirname, 'client', 'index.html'))
+// const ROUTER = require('./router')
+// app.use(express.static(path.resolve(__dirname, 'client')) )
+app.get('/', (req, res)=> {
+  res.send(TESTD.Valute)
+
+  // res.sendFile(path.resolve(__dirname, './', TESTD));
+// })
+  // res.sendFile(path.resolve(__dirname, './', TESTD));
 })
+app.get('/AMD', (req, res)=> {
+  res.send(TESTD.Valute.AMD)
+})
+// middleware that is specific to this router
+// router.use(function timeLog(req, res, next) {
+//   console.log('Time: ', Date.now());
+//   next();
+// });
+// // define the home page route
+// router.get('/', function(req, res) {
+//   res.send('GET request to the homepage');
+//   // res.send(JSON.stringify(DATAJSON, null, 1));
+// });
 
 
 
@@ -32,20 +48,4 @@ app.listen(PORT, () => {
 })
 /////////////////////////////////////////////////////
 
-// GET DATA FROM API TO FILE 
-axios.get(url)
-  .then(response => {
-    parseString(response.data, function (err, result) {
-      console.log(result); // returns a json array
-      fs.writeFile('rate.json', JSON.stringify(result), (err)=>{  //saves XML from API to JSON 
-        if (err) console.log('error')
-      })
-    });
-  })
-  .catch(error => {
-    console.log(error);
-  });
-/////////////////////////////////////////////////////
-
-
-
+GetDATA();
