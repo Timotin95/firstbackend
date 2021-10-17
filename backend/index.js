@@ -10,22 +10,26 @@ const app = express()
 const path = require('path')
 const url = require('url')
 const PORT = process.env.PORT || 3000 // SERVER PORT
-const TESTD = require('./test.json')
 const router = express.Router();
-const DATAJSON = require('./rate.json')
-const GetDATA = require('./src/getdataformAPI') //get data from api 
+const { getAll, get } = require('./src/rates')
 // ROUTER 
 // const ROUTER = require('./router')
 // app.use(express.static(path.resolve(__dirname, 'client')) )
-app.get('/', (req, res)=> {
-  res.send(TESTD.Valute)
-
-  // res.sendFile(path.resolve(__dirname, './', TESTD));
-// })
-  // res.sendFile(path.resolve(__dirname, './', TESTD));
+app.get('/', async (req, res)=> {
+  res.send(await getAll());
 })
-app.get('/AMD', (req, res)=> {
-  res.send(TESTD.Valute.AMD)
+
+app.get('/:code', async (req, res)=> {
+  const { code } = req.params;
+  const rate = await get(code);
+
+  if (!rate) {
+    res.statusCode = 404;
+    res.send('Not Found');
+  } else {
+    res.statusCode = 200;
+    res.send(rate);
+  }
 })
 // middleware that is specific to this router
 // router.use(function timeLog(req, res, next) {
@@ -47,5 +51,3 @@ app.listen(PORT, () => {
     console.log(`server has been started on port ${PORT}`)
 })
 /////////////////////////////////////////////////////
-
-GetDATA();
