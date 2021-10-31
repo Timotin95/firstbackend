@@ -1,13 +1,13 @@
 let cache = {};
 
 module.exports.cache = async (key, seconds, cb) => {
-  if (cache[key] && (Date.now() - seconds) > cache[key].lastCacheTime) {
+  if (cache[key] && Date.now()> cache[key].lastCacheTime+seconds) {
     cache[key] = undefined;
   }
 
   if (!cache[key]) {
     cache[key] = {
-      value: await cb,
+      value: await cb(),
       lastCacheTime: Date.now(),
     };
   }
